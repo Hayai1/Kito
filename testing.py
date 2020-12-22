@@ -7,12 +7,14 @@ pygame.init() # initiates pygame
 
 pygame.display.set_caption('Pygame Platformer')
 
-WINDOW_SIZE = (800,600)
+WINDOW_SIZE = (1920,1080)
 
-screen = pygame.display.set_mode(WINDOW_SIZE,0,32) # initiate the window
+screen = pygame.display.set_mode(WINDOW_SIZE, pygame.FULLSCREEN) # initiate the window
 
-display = pygame.Surface((400,300)) # used as the surface for rendering, which is scaled
+display = pygame.Surface((960,540)) # used as the surface for rendering, which is scaled
 part_path = 'C:/Users/Dylan/Desktop/learning platformers/my_platformer_project/'
+
+
 
 global animation_frames
 animation_frames = {}
@@ -47,16 +49,7 @@ animation_database['run'] = load_animation(part_path +'player_animations/run',[7
 animation_database['idle'] = load_animation(part_path +'player_animations/idle',[7,7,7])
 animation_database['fall'] = load_animation(part_path +'player_animations/fall',[7,7])
 
-player_action = 'idle'
-player_frame = 0
-player_flip = False
 
-moving_right = False
-moving_left = False
-vertical_momentum = 0
-air_timer = 0
-
-true_scroll = [0,0]
 
 def load_map(path):
     f = open(path + '.txt','r')
@@ -68,17 +61,24 @@ def load_map(path):
         game_map.append(list(row))
     return game_map
 
+
+bg = [-120,0]
+flag = False
+flag_2 = False
 game_map = load_map('map')
 grass_img= pygame.image.load(part_path + 'tiles//grass.png')
 dirt_img= pygame.image.load(part_path + 'tiles//dirt.png')
 bg_image= pygame.image.load(part_path + 'bgs//bg hills.png').convert()
 bg_image.set_colorkey((255,255,255))
-
-
-
-
-player_rect= pygame.Rect(100,100,42,43)
-
+player_action = 'idle'
+player_frame = 0
+player_flip = False
+true_scroll = [0,0]
+moving_right = False
+moving_left = False
+vertical_momentum = 0
+air_timer = 0
+player_rect= pygame.Rect(100,100,22,43)
 background_objects = [[0.25,[120,10,70,400]],[0.25,[280,30,40,400]],[0.5,[30,40,40,400]],[0.5,[130,90,100,400]],[0.5,[300,80,120,400]]]
 
 def collision_test(rect,tiles):
@@ -110,14 +110,11 @@ def move(rect,movement,tiles):
             collision_types['top'] = True
     return rect, collision_types
 
-bg = [-100,0]
-flag = False
-flag_2 = False
 while True: # game loop
     display.fill((146,244,255)) # clear screen by filling it with blue
 
-    true_scroll[0] += (player_rect.x-true_scroll[0]-152)/20
-    true_scroll[1] += (player_rect.y-true_scroll[1]-106)/20
+    true_scroll[0] += (player_rect.x-true_scroll[0]-450)/20
+    true_scroll[1] += (player_rect.y-true_scroll[1]-200)/20
     scroll = true_scroll.copy()
     scroll[0] = int(scroll[0])
     scroll[1] = int(scroll[1])
@@ -138,6 +135,9 @@ while True: # game loop
             x += 1
         y += 1
 
+    if player_rect[1] >= 500:
+        player_rect[0] = 100
+        player_rect[1] = 10 0 
     player_movement = [0,0]
     if moving_right == True:
         player_movement[0] += 4
@@ -165,7 +165,6 @@ while True: # game loop
         player_action,player_frame =change_action(player_action,player_frame,'run')
         player_flip = True
     player_rect,collisions = move(player_rect,player_movement,tile_rects)
-
     if collisions['bottom'] == True:
         air_timer = 0
         vertical_momentum = 0
@@ -180,7 +179,7 @@ while True: # game loop
         player_frame = 0
     player_img_id = animation_database[player_action][player_frame]
     player_img = animation_frames[player_img_id]
-    display.blit(pygame.transform.flip(player_img,player_flip,False),(player_rect.x-scroll[0],player_rect.y-scroll[1]))
+    display.blit(pygame.transform.flip(player_img,player_flip,False),(player_rect.x-scroll[0]-10,player_rect.y-scroll[1]))
 
     for event in pygame.event.get(): # event loop
         if event.type == QUIT:
